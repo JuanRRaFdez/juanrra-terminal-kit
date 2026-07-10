@@ -1,12 +1,25 @@
 # =============================================================================
-# juanrra-terminal-kit — shell.bash
+# juanrra-terminal-kit — shell.bash (repository reference)
 # =============================================================================
-# This file is sourced by your .bashrc
-# Add your terminal customisations below
+# This is the canonical shell.bash kept in the repository.
+#
+# IMPORTANT: this file is NOT the installed loader. install.sh does not copy or
+# modify this file. Instead, install.sh generates a new loader at:
+#   ~/.config/juanrra-terminal-kit/shell.bash
+# that sources only the modules the user selected during installation.
+#
+# To develop/test modules locally without running the installer:
+#   source shell.bash
+# (this file sources no modules by default — it is a reference, not a loader)
+#
+# For local overrides during development, create shell.bash.local in the repo root.
+# For overrides in a live installation, edit:
+#   ~/.config/juanrra-terminal-kit/shell.bash.local
 # =============================================================================
 
-# ── colours ──────────────────────────────────────────────────────────────────
-# You can override these in your shell.bash.local
+# ── colours (reference defaults) ──────────────────────────────────────────────
+# These values are placeholders. The generated installed loader uses the actual
+# module content sourced at install time.
 : "${COLOUR_USER:=\[\e[1;32m\]}"
 : "${COLOUR_HOST:=\[\e[1;36m\]}"
 : "${COLOUR_PATH:=\[\e[1;34m\]}"
@@ -16,70 +29,8 @@
 : "${COLOUR_WARN:=\[\e[1;33m\]}"
 : "${COLOUR_ERR:=\[\e[0;31m\]}"
 
-# ── prompt ───────────────────────────────────────────────────────────────────
-# Show git branch in prompt when inside a git repo
-git_branch() {
-  local branch
-  branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-  if [[ -n "$branch" ]]; then
-    echo " ${COLOUR_GIT}(${branch})${COLOUR_RESET}"
-  fi
-}
-
-# ── window title ──────────────────────────────────────────────────────────────
-# Set terminal title to user@host:path
-case "$TERM" in
-  xterm*|rxvt*|screen*)
-    PS1="\033]0;\u@\h: \w\007"
-    ;;
-esac
-
-# ── aliases ──────────────────────────────────────────────────────────────────
-# Safety
-alias rm='rm -i'
-alias cp='cp -i'
-alias mv='mv -i'
-
-# Common shortcuts
-alias ll='ls -la'
-alias la='ls -A'
-alias l='ls -CF'
-
-# Git
-alias gs='git status'
-alias ga='git add'
-alias gc='git commit'
-alias gp='git push'
-alias gl='git log --oneline -10'
-alias gd='git diff'
-
-# ── functions ───────────────────────────────────────────────────────────────
-# Create a directory and cd into it
-mkcd() { mkdir -p "$1" && cd "$1"; }
-
-# Extract any archive
-extract() {
-  if [[ -f "$1" ]]; then
-    case "$1" in
-      *.tar.bz2) tar xjf "$1" ;;
-      *.tar.gz)  tar xzf "$1" ;;
-      *.bz2)     bunzip2 "$1" ;;
-      *.gz)      gunzip "$1" ;;
-      *.tar)     tar xf "$1" ;;
-      *.tbz2)    tar xjf "$1" ;;
-      *.tgz)     tar xzf "$1" ;;
-      *.zip)     unzip "$1" ;;
-      *.Z)       uncompress "$1" ;;
-      *)         echo "'$1' cannot be extracted via extract()" ;;
-    esac
-  else
-    echo "'$1' is not a valid file"
-  fi
-}
-
-# ── shell.bash.local ─────────────────────────────────────────────────────────
-# Source user customisations if they exist
-# Keep personal overrides here so 'git pull' on the kit doesn't overwrite them
-if [[ -f "$HOME/.config/juanrra-terminal-kit/shell.bash.local" ]]; then
-  source "$HOME/.config/juanrra-terminal-kit/shell.bash.local"
+# ── local overrides (development only) ────────────────────────────────────────
+# Not tracked in git; use only for local development experiments.
+if [[ -f "$(dirname "${BASH_SOURCE[0]}")/shell.bash.local" ]]; then
+  source "$(dirname "${BASH_SOURCE[0]}")/shell.bash.local"
 fi
